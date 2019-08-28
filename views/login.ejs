@@ -1,0 +1,96 @@
+<% if (token) load("inbox.ejs") %>
+
+<div class="section fullscreen">
+	
+	<h1>Sign In &mdash; Access your emails in <strong>seconds!</strong></h1>
+	
+	<p>Sign into <strong>WebCourrier</strong> with your <strong>MailEE credentials</strong>. If you don't know your credentials, please contact IT as soon as possible.</p>
+	
+	<div class="form">
+		
+		<div class="line">
+			
+			<input id="server" type="text" autocomplete="url" value="<%- localStorage.getItem("server") || "" %>" placeholder="Server" required>
+			
+		</div>
+
+		<div class="line">
+			
+			<input id="username" type="text" autocomplete="username" placeholder="Username" required>
+			
+		</div>
+		
+		<div class="line">
+			
+			<input id="password" type="password" autocomplete="current-password" placeholder="Password" required> <input id="submit" type="submit" value="Sign in">
+			
+		</div>
+
+		<p id="error" style="color: red;"></p>
+
+		<script>
+		
+			document.getElementById("submit").addEventListener("click", async () => {
+				
+				const server = document.getElementById("server").value;
+				const username = document.getElementById("username").value;
+				const password = document.getElementById("password").value;
+
+				console.log(`Signing into server "${server}"...`);
+
+				mi = new JSONMI(server);
+
+				const auth = await mi.authenticate(username, password);
+
+				if (auth) {
+
+					localStorage.setItem("server", server);
+					localStorage.setItem("token", auth);
+
+					// load("inbox.ejs");
+
+					location.reload();
+
+				} else {
+
+					document.getElementById("error").innerText = "Invalid credentials, please try again.";
+
+				}
+
+			});
+
+		</script>
+
+	</div>
+	
+</div>
+
+<div class="section no_padding">
+	
+	<h2 class="padded">Need Help?</h2>
+	
+	<div class="squares">
+		
+		<a href="https://docs.google.com/document/d/1oQhwEuTbkKqHv3hHaEA8S-WTga6h6vECP7f5lH5q2og/edit" target="blank">
+			
+			<div class="body">
+				
+				<h2>MailEE Documentation</h2>
+				
+			</div>
+			
+		</a>
+		
+		<a href="https://docs.google.com/document/d/1qV8FApI4kAkjR8odrCK6grxk0nzmfP-IvqV5MyQwLb0/edit" class="grow" target="blank">
+			
+			<div class="body">
+				
+				<h2>Signing into WebCourrier</h2>
+				
+			</div>
+			
+		</a>
+		
+	</div>
+	
+</div>
