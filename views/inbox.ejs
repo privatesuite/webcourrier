@@ -14,7 +14,7 @@
 
 				<div class="email" style="position: relative;" data-id="<%- email._id %>">
 
-					<h3><%- /*email.metadata.from.value[0].name ||*/ email.metadata.from.value[0].address %> &mdash; <%- email.metadata.subject %></h3>
+					<h4><%- /*email.metadata.from.value[0].name ||*/ email.metadata.from.value[0].address %> &mdash; <%- email.metadata.subject %></h4>
 					
 					<p class="sub"><%- new Date(email.metadata.date).toLocaleString() %> <br> <%- email.metadata.preview %>...</p>
 	
@@ -30,18 +30,18 @@
 		
 		<h2 id="preview_subject"></h2>
 		
-		<div>
+		<div style="display: none; max-height: 50px; overflow: auto;" id="preview_from_container">
 
 			<span><strong style="margin-right: 10px;">FROM</strong> <code id="preview_from"></code> </span>
 
 		</div> <br>
 
-		<div>
+		<div style="display: none; max-height: 50px; overflow: auto;" id="preview_to_container">
 
 			<span><strong style="margin-right: 35px;">TO</strong> <code id="preview_to"></code> </span>
 
 		</div>
-		<div>
+		<div style="display: none; max-height: 50px; overflow: auto;" id="preview_cc_container">
 
 			<span><strong style="margin-right: 35px;">CC</strong> <code id="preview_cc"></code> </span>
 
@@ -82,6 +82,11 @@
 
 			if (document.querySelector(".email.hover")) document.querySelector(".email.hover").classList.remove("hover");
 
+			document.getElementById("preview_from_container").style.display = "block";
+			document.getElementById("preview_to_container").style.display = "block";
+
+			document.getElementById("preview_cc_container").style.display = "none";
+
 			const email = target.classList.contains("email") ? target : target.offsetParent;
 
 			email.classList.add("hover");
@@ -90,9 +95,15 @@
 
 			document.getElementById("preview_subject").innerText = currentEmail.data.subject;
 			
-			document.getElementById("preview_from").innerText = currentEmail.data.from.text.slice(0, 64);
-			document.getElementById("preview_to").innerText = currentEmail.data.to.text.slice(0, 64);
-			if (currentEmail.data.cc) document.getElementById("preview_cc").innerText = currentEmail.data.cc.text.slice(0, 64);
+			document.getElementById("preview_from").innerText = currentEmail.data.from.text;
+			document.getElementById("preview_to").innerText = currentEmail.data.to.text;
+		
+			if (currentEmail.data.cc) {
+				
+				document.getElementById("preview_cc_container").style.display = "none";
+				document.getElementById("preview_cc").innerText = currentEmail.data.cc.text;
+				
+			}
 
 			setPreview(currentEmail.data.html || currentEmail.data.text);
 
