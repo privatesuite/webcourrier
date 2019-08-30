@@ -2,6 +2,7 @@ let mi;
 let token;
 
 const cache = {};
+const alreadyRun = [];
 
 async function render (view, data = {}) {
 
@@ -35,7 +36,18 @@ async function load (view) {
 
 	for (const script of document.getElementsByTagName("script")) {
 		
-		if (script.innerHTML.trim()) eval(script.innerHTML);
+		if (script.innerHTML.trim() && (script.getAttribute("data-once") ? alreadyRun.indexOf(script.getAttribute("data-once")) === -1 : true)) {
+			
+			if (script.getAttribute("data-once")) {
+				
+				alreadyRun.push(script.getAttribute("data-once"));
+				console.log(`Running "${script.getAttribute("data-once")}" for the first time...`);
+
+			}
+
+			eval(script.innerHTML);
+
+		}
 
 	}
 
@@ -45,4 +57,5 @@ if (localStorage.getItem("token")) token = localStorage.getItem("token");
 if (localStorage.getItem("server")) mi = new JSONMI(localStorage.getItem("server"));
 
 document.body.onload = "";
-load("login.ejs");
+if (!token) load("login.ejs");
+else load("inbox.ejs");

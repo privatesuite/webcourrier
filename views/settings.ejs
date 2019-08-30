@@ -1,0 +1,105 @@
+<div class="section">
+
+	<a href="#" onclick="load(`inbox.ejs`);" style="vertical-align: middle;"><i data-feather="inbox" style="vertical-align: middle;"></i></a>
+	
+	<h1 style="display: inline-block; vertical-align: middle; margin-left: 20px;">Settings</h1>
+
+	<h2 style="margin-top: 0;">Hi <%- (await mi.me(token)).name || (await mi.me(token)).username %>!</h2>
+
+	<p>You can configure your user account below.</p>
+
+	<% if ((await mi.me(token)).admin) { %>
+
+		<h2>Admin Settings</h2>
+
+		<h3>Users</h3>
+
+		<div class="list">
+
+			<% for (const user of (await mi.users(token))) { %>
+
+				<div class="user">
+
+					<h4><code>
+						
+						<%- user.username %> <% if (user.name) { %> &mdash; <strong><%- user.name %></strong> <% } %>
+					
+						<span style="float: right;" class="traits">
+						
+							<% if (user.admin) { %> <span class="tag white">admin</span> <% } %>
+							<% if (user.virtual) { %> <span class="tag white">virtual</span> <% } %>
+						
+							<span class="tag white">+</span>
+
+						</span>
+
+					</code></h4>
+
+					<button class="edit">Edit User</button>
+					
+					<div class="form edit_dialog" style="display: none;">
+
+						<input type="text" class="username line" placeholder="Username" value="<%- user.username %>" readonly>
+						<input type="text" class="name line" placeholder="Name" value="<%- user.name %>">
+						<input type="password" class="password line" placeholder="Password">
+
+						<button class="save">Save Changes</button>
+
+					</div>
+
+					<button style="float: right;" onclick="confirm(`Are you sure that you'd like to delete this user?`) ? (() => {mi.deleteUser(token, this.parentElement.querySelector(`.username`).getAttribute(`value`)); load(`settings.ejs`);})() : undefined">Delete User</button>
+					
+					<br><br>
+	
+				</div>
+
+			<% } %>
+
+		</div>
+
+	<% } %>
+
+</div>
+
+<script>
+
+	feather.replace();
+
+</script>
+
+<script data-once="settings">
+
+	document.addEventListener("click", async event => {
+
+		/**
+		 * @type {Element}
+		 */
+		const target = event.target;
+
+		if (!target) return;
+
+		if (target.classList.contains("edit")) {
+
+			target.style.display = "none";
+			target.parentElement.querySelector(".edit_dialog").style.display = "inline-block";
+
+		} else if (target.classList.contains("save")) {
+
+			target.parentElement.style.display = "none";
+			target.parentElement.parentElement.querySelector(".edit").style.display = "inline-block";
+
+			await mi.updateUser(token, target.parentElement.querySelector(".username").getAttribute("value"), {
+
+				username: target.parentElement.querySelector(".username").value,
+				name: target.parentElement.querySelector(".name").value,
+				password: target.parentElement.querySelector(".password").value
+
+			});
+			
+			load("settings.ejs");
+
+		}
+
+	});
+
+</script>

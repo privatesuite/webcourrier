@@ -4,7 +4,10 @@
 		
 		<div class="padded">
 		
-			<a href="#" onclick="localStorage.clear(); location.reload();" style="vertical-align: middle;"><i data-feather="log-out"></i></a> <h3 style="display: inline-block; margin-left: 20px;">Inbox</h3>
+			<a href="#" onclick="localStorage.removeItem(`token`); location.reload();" style="vertical-align: middle;"><i data-feather="log-out"></i></a>
+			<a href="#" onclick="load(`settings.ejs`);" style="vertical-align: middle; margin-left: 10px;"><i data-feather="settings"></i></a>
+			
+			<h3 style="display: inline-block; margin-left: 20px;">Inbox</h3>
 			
 		</div>
 		
@@ -63,7 +66,13 @@
 
 	feather.replace();
 
+</script>
+
+<script data-once="inbox-load">
+
 	let currentEmail;
+
+	// (async () => {me = await mi.me(token);});
 
 	function setPreview (html) {
 
@@ -78,7 +87,9 @@
 		 */
 		const target = event.target;
 
-		if (target.classList.contains("email") || target.offsetParent.classList.contains("email")) {
+		if (!target) return;
+
+		if (target.classList.contains("email") || (target.offsetParent && target.offsetParent.classList.contains("email"))) {
 
 			if (document.querySelector(".email.hover")) document.querySelector(".email.hover").classList.remove("hover");
 
@@ -88,8 +99,6 @@
 			document.getElementById("preview_cc_container").style.display = "none";
 
 			const email = target.classList.contains("email") ? target : target.offsetParent;
-
-			email.classList.add("hover");
 
 			currentEmail = await mi.email(token, email.getAttribute("data-id"));
 
@@ -105,6 +114,7 @@
 				
 			}
 
+			email.classList.add("hover");
 			setPreview(currentEmail.data.html || currentEmail.data.text);
 
 		}
