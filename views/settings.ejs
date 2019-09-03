@@ -6,7 +6,33 @@
 
 	<h2 style="margin-top: 0;">Hi <%- (await mi.me(token)).name || (await mi.me(token)).username %>!</h2>
 
-	<p>You can configure your user account below.</p>
+	<p>You can configure your user account below. If you need any help, feel free to contact Private Suite's IT team.</p>
+
+	<div class="split">
+
+		<div style="margin-right: 50px;">
+
+			<h3>Identity</h3>
+
+			<p>We're all different; set your identity information here. Be warned, everything below will be attached to emails, so please don't disclose too much personally identifiable data!</p>
+
+			<p class="sub">Your email name; for example: William at Public Room.</p>
+			<input type="text" id="new_name" placeholder="Name"> <button id="change_name">Change Name</button>
+
+		</div>
+
+		<div>
+
+			<h3>Password</h3>
+
+			<p>Your password is currently safe and sound in the <code>userfile</code> file designated by your MailEE server.</p>
+
+			<p><span class="sub">Input a password below to change your account's password. Please,</span> <strong>use a strong password that's easy on humans and hard on machines.</strong></p>
+			<input type="password" id="new_password" placeholder="New Password"> <button id="change_password">Change Password</button>
+
+		</div>
+
+	</div>
 
 	<% if ((await mi.me(token)).admin) { %>
 
@@ -29,7 +55,7 @@
 							<% if (user.admin) { %> <span class="tag white">admin</span> <% } %>
 							<% if (user.virtual) { %> <span class="tag white">virtual</span> <% } %>
 						
-							<span class="tag white">+</span>
+							<!-- <span class="tag white">+</span> -->
 
 						</span>
 
@@ -39,11 +65,22 @@
 					
 					<div class="form edit_dialog" style="display: none;">
 
-						<input type="text" class="username line" placeholder="Username" value="<%- user.username %>" readonly>
-						<input type="text" class="name line" placeholder="Name" value="<%- user.name %>">
-						<input type="password" class="password line" placeholder="Password">
+						<% if (!user.virtual) { %>
 
-						<button class="save">Save Changes</button>
+							<input type="text" class="username line" placeholder="Username" value="<%- user.username %>" readonly>
+							<input type="text" class="name line" placeholder="Name" value="<%- user.name %>">
+							<div class="line"><input type="text" class="isAdmin" placeholder="Is An Admin" value="<%- user.admin ? `yes` : `no` %>"> <span>(is this user an admin?)</span></div>
+							<input type="password" class="password line" placeholder="Password">
+
+							<button class="save">Save Changes</button>
+
+						<% } else { %>
+
+							<p>This user is virtual, therefore, you cannot configure this user.</p>
+
+							<button class="save">Exit</button>
+
+						<% } %>
 
 					</div>
 
@@ -78,7 +115,27 @@
 
 		if (!target) return;
 
-		if (target.classList.contains("edit")) {
+		if (target.id === "change_name") {
+
+			await mi.updateUser(token, (await mi.me(token)).username, {
+
+				name: document.getElementById("new_name").value
+
+			});
+
+			load("settings.ejs");
+
+		} else if (target.id === "change_password") {
+
+			await mi.updateUser(token, (await mi.me(token)).username, {
+
+				password: document.getElementById("new_password").value
+
+			});
+
+			load("settings.ejs");
+
+		} else if (target.classList.contains("edit")) {
 
 			target.style.display = "none";
 			target.parentElement.querySelector(".edit_dialog").style.display = "inline-block";
@@ -92,7 +149,8 @@
 
 				username: target.parentElement.querySelector(".username").value,
 				name: target.parentElement.querySelector(".name").value,
-				password: target.parentElement.querySelector(".password").value
+				password: target.parentElement.querySelector(".password").value,
+				admin: target.parentElement.querySelector(".isAdmin").value.toLowerCase() === "yes" ? true : false
 
 			});
 			

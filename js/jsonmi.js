@@ -4,7 +4,7 @@ class JSONMI {
 
 		this.apiRoot = apiRoot;
 
-		this.meCache = new Map();
+		// this.meCache = new Map();
 
 	}
 
@@ -51,7 +51,7 @@ class JSONMI {
 
 	async me (token) {
 
-		if (this.meCache.has(token)) return this.meCache.get(token);
+		// if (this.meCache.has(token)) return this.meCache.get(token);
 
 		const result = await (await fetch(`${this.apiRoot}/about_me`, {
 
@@ -63,7 +63,7 @@ class JSONMI {
 
 		})).json();
 
-		this.meCache.set(token, result);
+		// this.meCache.set(token, result);
 		
 		return result;
 
