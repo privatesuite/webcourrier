@@ -57,5 +57,9 @@ if (localStorage.getItem("token")) token = localStorage.getItem("token");
 if (localStorage.getItem("server")) mi = new JSONMI(localStorage.getItem("server"));
 
 document.body.onload = "";
-if (!token) load("login.ejs");
-else load("inbox.ejs");
+(async () => {
+
+	if (!token) load("login.ejs");
+	else try {await load("inbox.ejs");} catch {load("login.ejs");}
+
+})();

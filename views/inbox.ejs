@@ -19,7 +19,7 @@
 
 					<h4><%- /*email.metadata.from.value[0].name ||*/ email.metadata.from.value[0].address %> &mdash; <%- email.metadata.subject %></h4>
 					
-					<p class="sub"><%- new Date(email.metadata.date).toLocaleString() %> <br> <%- email.metadata.preview %>...</p>
+					<p class="sub"><%- new Date(email.metadata.date).toLocaleString() %> <br> <%- quotedPrintable.decode(email.metadata.preview) %>...</p>
 	
 				</div>
 
@@ -29,30 +29,34 @@
 		
 	</div>
 	
-	<div class="section left_border" style="width: calc(100% - 300px);">
+	<div id="preview_box" class="section left_border no_padding" style="width: calc(100% - 300px); overflow: auto;">
 		
-		<h2 id="preview_subject"></h2>
+		<div class="padded">
+
+			<h2 id="preview_subject"></h2>
 		
-		<div style="display: none; max-height: 50px; overflow: auto;" id="preview_from_container">
+			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_from_container">
 
-			<span><strong style="margin-right: 10px;">FROM</strong> <code id="preview_from"></code> </span>
+				<span><strong style="margin-right: 10px;">FROM</strong> <code id="preview_from"></code> </span>
 
-		</div> <br>
+			</div> <br>
 
-		<div style="display: none; max-height: 50px; overflow: auto;" id="preview_to_container">
+			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_to_container">
 
-			<span><strong style="margin-right: 35px;">TO</strong> <code id="preview_to"></code> </span>
+				<span><strong style="margin-right: 35px;">TO</strong> <code id="preview_to"></code> </span>
 
-		</div>
-		<div style="display: none; max-height: 50px; overflow: auto;" id="preview_cc_container">
+			</div>
+			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_cc_container">
 
-			<span><strong style="margin-right: 35px;">CC</strong> <code id="preview_cc"></code> </span>
+				<span><strong style="margin-right: 35px;">CC</strong> <code id="preview_cc"></code> </span>
+
+			</div>
 
 		</div>
 		
 		<br>
 
-		<iframe id="preview_frame" sandbox="" style="border: none; width: 100%; height: 60%;">
+		<iframe id="preview_frame" sandbox="allow-popups allow-popups-to-escape-sandbox" style="border: none; width: 100%; /*height: 60%;*/ height: 100%; overflow: hidden;" class="padded">
 
 		
 
@@ -70,13 +74,27 @@
 
 <script data-once="inbox-load">
 
+	let loading = false;
 	let currentEmail;
 
 	// (async () => {me = await mi.me(token);});
 
 	function setPreview (html) {
 
-		document.getElementById("preview_frame").srcdoc = `<style>@import "https://fonts.googleapis.com/css?family=Roboto"; html, body {margin: 0; padding: 0; font-family: "Roboto"}</style>${html}`;
+		loading = true;
+		document.getElementById("preview_frame").scrolling = "yes";
+		document.getElementById("preview_frame").srcdoc = `<style>@import "https://fonts.googleapis.com/css?family=Roboto"; html, body {margin: 0; padding: 0; font-family: "Roboto";} /**::-webkit-scrollbar {width: 0px;}*/</style><base target="blank">${html}`;
+		
+		setTimeout(() => {
+
+			if (loading) {
+			
+				document.getElementById("preview_frame").scrolling = "no";
+				loading = false;
+
+			}
+
+		}, 500);
 
 	}
 
@@ -115,9 +133,35 @@
 			}
 
 			email.classList.add("hover");
-			setPreview(currentEmail.data.html || currentEmail.data.text);
+			document.getElementById("preview_box").scroll(0, 0);
+			setPreview(quotedPrintable.decode(currentEmail.data.html || currentEmail.data.text));
 
 		}
+
+		document.getElementById("preview_frame").addEventListener("load", () => {
+
+			if (!loading) return;
+
+			document.getElementById("preview_frame").scrolling = "no";
+			loading = false;
+
+		});
+
+		document.getElementById("preview_box").addEventListener("scroll", event => {
+
+			// console.log(event);
+
+			if (document.getElementById("preview_box").scrollTop > document.getElementById("preview_frame").offsetTop) {
+
+				document.getElementById("preview_frame").scrolling = "yes";
+
+			} else if (!loading) {
+
+				document.getElementById("preview_frame").scrolling = "no";
+
+			}
+
+		});
 
 	});
 	

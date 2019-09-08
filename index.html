@@ -1,40 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+	
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>WebCourrier</title>
-
+	
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/privatesuite/psm.css/css/app.css">
-
+	
 	<script src="js/jsonmi.js"></script>
 	<script src="js/ejs.min.js"></script>
 	<script src="https://unpkg.com/feather-icons"></script>
 
+	<script>
+		
+		const quotedPrintable = {
+			
+			decode (data) {
+			
+				if (data.indexOf("=0D") === -1) return data;
+				
+				if (!(typeof data === "string" || data instanceof String)) {
+					return data;
+				}
+				var replacer = function (match, p1) {
+					// handle escape sequence
+					if (p1.trim().length === 2) {
+						// decode byte (for example: "=20" ends up as " ")
+						var code = parseInt(p1.trim(), 16);
+						return String.fromCharCode(code);
+					}
+					// handle soft line breaks
+					return "";
+				};
+				// remove soft line breaks and convert escape sequences
+				data = data.replace(/=([0-9A-F]{2}|\r\n|\n)/gi, replacer);
+				// decode escape sequences
+				try {
+				
+					return decodeURIComponent(escape(data));
+				
+				} catch (dummy) {return data;}
+				
+			}
+			
+		}
+		
+	</script>
+	
 </head>
 <body onload="const __facts = ['These facts are random!', 'IT loves you!', 'This mail client was made from 0 by IT.', 'This mail client uses psm.css - our internal-use styling library.', 'This mail client uses JSONMI to get and write emails.', 'Canada is cold.', 'Australia has big spiders.', 'The United States has big debates.', 'George Clanton was born in Virginia.', 'Potatoes are delicious - especially when they\'re cooked in liquid.']; document.getElementById('fact').innerText = __facts[Math.floor(Math.random()*__facts.length)];">
 	
 	<div class="app">
-
+		
 		<div class="section reverse">
-
+			
 			<h1>Loading &mdash; Please wait!</h1>
-	
+			
 		</div>
-
+		
 		<div class="section">
-
+			
 			<h3>Did you know?</h3>
-
+			
 			<h2 id="fact"></h2>
-
+			
 		</div>
-
+		
 	</div>
-
+	
 	<script src="js/app.js"></script>
-
+	
 </body>
 </html>
