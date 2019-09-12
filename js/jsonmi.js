@@ -111,6 +111,33 @@ class JSONMI {
 
 	}
 
+	async createUser (token, username, changes) {
+
+		const result = await (await fetch(`${this.apiRoot}/update_user`, {
+
+			method: "POST",
+
+			headers: {
+
+				"Content-Type": "application/json",
+				authorization: `Bearer ${token}`
+
+			},
+
+			body: JSON.stringify({
+
+				username,
+				changes,
+				create: true
+
+			})
+
+		})).json();
+		
+		return result;
+	
+	}
+
 	async deleteUser (token, username) {
 
 		const result = await (await fetch(`${this.apiRoot}/update_user`, {

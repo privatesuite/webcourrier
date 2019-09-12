@@ -40,6 +40,8 @@
 
 		<h3>Users</h3>
 
+		<input type="text" id="create_user_username" placeholder="Username"> <button id="create_user">Create User</button>
+
 		<div class="list">
 
 			<% for (const user of (await mi.users(token))) { %>
@@ -130,6 +132,20 @@
 			await mi.updateUser(token, (await mi.me(token)).username, {
 
 				password: document.getElementById("new_password").value
+
+			});
+
+			load("settings.ejs");
+
+		} else if (target.id === "create_user") {
+
+			const username = document.getElementById("create_user_username").value;
+
+			if (!username.trim()) return;
+
+			await mi.createUser(token, username, {
+
+				username
 
 			});
 
