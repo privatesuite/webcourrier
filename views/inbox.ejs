@@ -1,26 +1,90 @@
+<style>
+
+	#close {
+
+		display: none;
+
+	}
+
+	#mail_list {
+
+		width: 400px;
+
+	}
+
+	#preview_box {
+
+		width: calc(100% - 300px);
+
+	}
+
+	#preview_frame {
+
+		height: 100%;
+
+	}
+
+	@media only screen and (max-width: 900px) {
+		
+		#mail_list {
+
+			width: 100%;
+
+		}
+
+		#preview_box {
+
+			display: none;
+
+			width: 100%;
+
+		}
+
+		#close {
+
+			display: inline-block;
+
+		}
+
+		#preview_frame {
+
+			height: 10000px;
+
+		}
+
+	}
+
+</style>
+
 <div class="split">
 	
-	<div class="section no_padding fullscreen" style="width: 300px; overflow: hidden;">
+	<div id="mail_list" class="section no_padding fullscreen" style="overflow: hidden;">
 		
 		<div class="padded">
-		
-			<a href="#" onclick="localStorage.removeItem(`token`); location.reload();" style="vertical-align: middle;"><i data-feather="log-out"></i></a>
-			<a href="#" onclick="load(`settings.ejs`);" style="vertical-align: middle; margin-left: 10px;"><i data-feather="settings"></i></a>
-			<a href="#" onclick="load(`email.ejs`);" style="vertical-align: middle; margin-left: 10px;"><i data-feather="plus-square"></i></a>
+
+			<div style="display: inline-block; vertical-align: middle;">
+
+				<a href="#" onclick="localStorage.removeItem(`token`); location.reload();" style=""><i data-feather="log-out"></i></a>
+				<a href="#" onclick="load(`settings.ejs`);" style="margin-left: 10px;"><i data-feather="settings"></i></a>
+				<a href="#" onclick="load(`email.ejs`);" style="margin-left: 10px;"><i data-feather="plus-square"></i></a>
+
+			</div>
 
 			<h3 style="display: inline-block; margin-left: 20px; vertical-align: middle;">Inbox</h3>
 
 		</div>
 		
-		<div class="list interactive" style="overflow: auto; max-height: 80%;">
+		<div class="list interactive" style="overflow: auto; max-height: 81%;">
 			
 			<% for (const email of await mi.inbox(token)) { %>
 
 				<div class="email" style="position: relative;" data-id="<%- email._id %>">
 
-					<h4><%- /*email.metadata.from.value[0].name ||*/ email.metadata.from.value[0].address %> &mdash; <%- email.metadata.subject || "No Subject" %></h4>
-					
-					<p class="sub"><%- new Date(email.metadata.date).toLocaleString() %> <br> <%- quotedPrintable.decode(email.metadata.preview) %>...</p>
+					<h4 style="margin-bottom: 0; font-weight: 500;"><%- email.metadata.from.value[0].address %></h4>
+					<h4 style="margin-top: 0;"><%- email.metadata.subject || "No Subject" %></h4>
+
+					<p class="sub">Received at <strong><%- new Date(email.metadata.date).toLocaleString() %></strong></p>
+					<p class="sub"><%- quotedPrintable.decode(email.metadata.preview) %>...</p>
 	
 				</div>
 
@@ -30,9 +94,11 @@
 		
 	</div>
 	
-	<div id="preview_box" class="section left_border no_padding" style="width: calc(100% - 300px); overflow: auto;">
+	<div id="preview_box" class="section left_border no_padding" style="overflow: auto;">
 		
-		<div class="padded">
+		<div class="padded" style="padding-bottom: 0;">
+
+			<button id="close">Close</button>
 
 			<div id="mail_preview_actions" style="display: none; float: right;">
 			
@@ -42,18 +108,18 @@
 
 			<h2 id="preview_subject"></h2>
 		
-			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_from_container">
+			<div style="display: none; /*max-height: 50px;*/ overflow: auto;" id="preview_from_container">
 
 				<span><strong style="margin-right: 10px;">FROM</strong> <code id="preview_from"></code> </span>
 
 			</div> <br>
 
-			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_to_container">
+			<div style="display: none; /*max-height: 50px;*/ overflow: auto;" id="preview_to_container">
 
 				<span><strong style="margin-right: 35px;">TO</strong> <code id="preview_to"></code> </span>
 
 			</div>
-			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_cc_container">
+			<div style="display: none; /*max-height: 50px;*/ overflow: auto;" id="preview_cc_container">
 
 				<span><strong style="margin-right: 35px;">CC</strong> <code id="preview_cc"></code> </span>
 
@@ -63,7 +129,7 @@
 		
 		<br>
 
-		<iframe id="preview_frame" sandbox="allow-popups allow-popups-to-escape-sandbox" style="border: none; width: 100%; /*height: 60%;*/ height: 100%; overflow: hidden;" class="padded">
+		<iframe id="preview_frame" sandbox="allow-popups allow-popups-to-escape-sandbox" style="border: none; width: 100%; /*height: 60%;*/ overflow: hidden;" class="padded">
 
 		
 
@@ -128,6 +194,13 @@
 
 			currentEmail = await mi.email(token, email.getAttribute("data-id"));
 
+			if (innerWidth < 900) {
+
+				document.getElementById("mail_list").style.display = "none";
+				document.getElementById("preview_box").style.display = "block";
+
+			}
+
 			document.getElementById("preview_subject").innerText = currentEmail.data.subject || "No Subject";
 			
 			document.getElementById("preview_from").innerText = currentEmail.data.from.text;
@@ -143,6 +216,11 @@
 			email.classList.add("hover");
 			document.getElementById("preview_box").scroll(0, 0);
 			setPreview(quotedPrintable.decode(currentEmail.data.html || currentEmail.data.text));
+
+		} else if (target.id === "close") {
+
+			document.getElementById("mail_list").style.display = "block";
+			document.getElementById("preview_box").style.display = "none";
 
 		} else if (target.id === "reply") {
 

@@ -1,6 +1,36 @@
+<style>
+
+	@media only screen and (min-width: 900px) {
+
+		.split>*:first-child {
+
+			width: 500px;
+
+		}
+
+	}
+
+	@media only screen and (max-width: 900px) {
+
+		.split {
+
+			display: block;
+
+		}
+
+		.split>* {
+
+			display: block;
+
+		}
+
+	}
+
+</style>
+
 <div class="split">
 
-	<div class="section" style="width: 500px;">
+	<div class="section">
 
 		<a href="#" onclick="load(`inbox.ejs`);" style="vertical-align: middle;"><i data-feather="x" style="vertical-align: middle;"></i></a> <br><br>
 
