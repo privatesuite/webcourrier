@@ -165,4 +165,25 @@ class JSONMI {
 
 	}
 
+	async sendEmail (token, email) {
+
+		const result = await (await fetch(`${this.apiRoot}/send_email`, {
+
+			method: "POST",
+
+			headers: {
+
+				"Content-Type": "application/json",
+				authorization: `Bearer ${token}`
+
+			},
+
+			body: JSON.stringify(email)
+
+		})).json();
+		
+		return result;
+
+	}
+	
 }

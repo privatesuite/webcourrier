@@ -6,9 +6,10 @@
 		
 			<a href="#" onclick="localStorage.removeItem(`token`); location.reload();" style="vertical-align: middle;"><i data-feather="log-out"></i></a>
 			<a href="#" onclick="load(`settings.ejs`);" style="vertical-align: middle; margin-left: 10px;"><i data-feather="settings"></i></a>
-			
-			<h3 style="display: inline-block; margin-left: 20px;">Inbox</h3>
-			
+			<a href="#" onclick="load(`email.ejs`);" style="vertical-align: middle; margin-left: 10px;"><i data-feather="plus-square"></i></a>
+
+			<h3 style="display: inline-block; margin-left: 20px; vertical-align: middle;">Inbox</h3>
+
 		</div>
 		
 		<div class="list interactive" style="overflow: auto; max-height: 80%;">
@@ -17,7 +18,7 @@
 
 				<div class="email" style="position: relative;" data-id="<%- email._id %>">
 
-					<h4><%- /*email.metadata.from.value[0].name ||*/ email.metadata.from.value[0].address %> &mdash; <%- email.metadata.subject %></h4>
+					<h4><%- /*email.metadata.from.value[0].name ||*/ email.metadata.from.value[0].address %> &mdash; <%- email.metadata.subject || "No Subject" %></h4>
 					
 					<p class="sub"><%- new Date(email.metadata.date).toLocaleString() %> <br> <%- quotedPrintable.decode(email.metadata.preview) %>...</p>
 	
@@ -120,14 +121,14 @@
 
 			currentEmail = await mi.email(token, email.getAttribute("data-id"));
 
-			document.getElementById("preview_subject").innerText = currentEmail.data.subject;
+			document.getElementById("preview_subject").innerText = currentEmail.data.subject || "No Subject";
 			
 			document.getElementById("preview_from").innerText = currentEmail.data.from.text;
 			document.getElementById("preview_to").innerText = currentEmail.data.to.text;
 		
 			if (currentEmail.data.cc) {
 				
-				document.getElementById("preview_cc_container").style.display = "none";
+				document.getElementById("preview_cc_container").style.display = "block";
 				document.getElementById("preview_cc").innerText = currentEmail.data.cc.text;
 				
 			}

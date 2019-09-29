@@ -1,0 +1,74 @@
+<div class="split">
+
+	<div class="section" style="width: 500px;">
+
+		<a href="#" onclick="load(`inbox.ejs`);" style="vertical-align: middle;"><i data-feather="x" style="vertical-align: middle;"></i></a> <br><br>
+
+		<div class="form" style="margin-bottom: 20px;">
+
+			<input id="to" type="text" placeholder="To" class="line" style="width: 100%;">
+			<input id="cc" type="text" placeholder="CC" class="line" style="width: 100%;">
+			<input id="bcc" type="text" placeholder="BCC" class="line" style="width: 100%;">
+
+			<button id="send_email">Send Email</button>
+
+		</div>
+
+	</div>
+
+	<div class="section left_border" style="width: 100%;">
+
+		<input id="subject" type="text" placeholder="Subject" style="margin-bottom: 20px; font-size: 40px; width: 100%;">
+
+		<div id="editor"></div>
+
+	</div>
+
+</div>
+
+<script>
+
+	feather.replace();
+
+	(async () => {
+	
+		await SashimiReady;
+
+		Sashimi.createEditorAt("#editor");
+	
+	})();
+
+</script>
+
+<script data-once="email">
+
+	document.addEventListener("click", async event => {
+
+		const target = event.target;
+
+		if (!target) return;
+
+		if (target.id === "send_email") {
+
+			if (!(document.getElementById("to").value && Sashimi.extractText("#editor").length > 0)) return;
+
+			await mi.sendEmail(token, {
+
+				subject: document.getElementById("subject").value,
+
+				to: document.getElementById("to").value,
+				cc: document.getElementById("cc").value,
+				bcc: document.getElementById("bcc").value,
+
+				html: Sashimi.extractHTML("#editor"),
+				text: Sashimi.extractText("#editor")
+
+			});
+
+			load("inbox.ejs");
+
+		}
+
+	});
+
+</script>
