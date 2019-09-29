@@ -34,6 +34,12 @@
 		
 		<div class="padded">
 
+			<div id="mail_preview_actions" style="display: none; float: right;">
+			
+				<button id="reply">Reply</button>
+
+			</div>
+
 			<h2 id="preview_subject"></h2>
 		
 			<div style="display: none; max-height: 50px; overflow: auto;" id="preview_from_container">
@@ -112,6 +118,7 @@
 
 			if (document.querySelector(".email.hover")) document.querySelector(".email.hover").classList.remove("hover");
 
+			document.getElementById("mail_preview_actions").style.display = "block";
 			document.getElementById("preview_from_container").style.display = "block";
 			document.getElementById("preview_to_container").style.display = "block";
 
@@ -137,32 +144,43 @@
 			document.getElementById("preview_box").scroll(0, 0);
 			setPreview(quotedPrintable.decode(currentEmail.data.html || currentEmail.data.text));
 
+		} else if (target.id === "reply") {
+
+			const subject = document.getElementById("preview_subject").innerText;
+
+			await load("email.ejs");
+
+			// console.log(currentEmail.data.to)
+			document.getElementById("subject").value = `Re: ${subject.replace(/re: /i, "")}`;
+			document.getElementById("to").value = currentEmail.data.from.value.map(_ => _.address).join(", ");
+			document.getElementById("cc").value = currentEmail.data.cc.value.map(_ => _.address).join(", ");
+
 		}
 
-		document.getElementById("preview_frame").addEventListener("load", () => {
+	});
 
-			if (!loading) return;
+	document.getElementById("preview_frame").addEventListener("load", () => {
+
+		if (!loading) return;
+
+		document.getElementById("preview_frame").scrolling = "no";
+		loading = false;
+
+	});
+
+	document.getElementById("preview_box").addEventListener("scroll", event => {
+
+		// console.log(event);
+
+		if (document.getElementById("preview_box").scrollTop > document.getElementById("preview_frame").offsetTop) {
+
+			document.getElementById("preview_frame").scrolling = "yes";
+
+		} else if (!loading) {
 
 			document.getElementById("preview_frame").scrolling = "no";
-			loading = false;
 
-		});
-
-		document.getElementById("preview_box").addEventListener("scroll", event => {
-
-			// console.log(event);
-
-			if (document.getElementById("preview_box").scrollTop > document.getElementById("preview_frame").offsetTop) {
-
-				document.getElementById("preview_frame").scrolling = "yes";
-
-			} else if (!loading) {
-
-				document.getElementById("preview_frame").scrolling = "no";
-
-			}
-
-		});
+		}
 
 	});
 	
