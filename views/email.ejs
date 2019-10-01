@@ -38,7 +38,7 @@
 
 			<input id="to" type="text" placeholder="To" class="line" style="width: 100%;">
 			<input id="cc" type="text" placeholder="CC" class="line" style="width: 100%;">
-			<input id="bcc" type="text" placeholder="BCC" class="line" style="width: 100%;">
+			<!-- <input id="bcc" type="text" placeholder="BCC" class="line" style="width: 100%;"> -->
 
 			<button id="send_email">Send Email</button>
 
@@ -88,7 +88,7 @@
 
 				to: document.getElementById("to").value,
 				cc: document.getElementById("cc").value,
-				bcc: document.getElementById("bcc").value,
+				// bcc: document.getElementById("bcc").value,
 
 				html: Sashimi.extractHTML("#editor"),
 				text: Sashimi.extractText("#editor")
